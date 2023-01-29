@@ -1,0 +1,182 @@
+Sqoop Basics 
+
+Sqoop is a tool used to transfer RDBMS to HDFS 
+
+SQOOP Import is used to transfer data from database to HDFS
+
+SQOOP export is used to transfer data from HDFS to Database 
+
+
+
+
+
+Full load 
+Incremental Load 
+Parallel import export
+Compression
+Security integration 
+Load data directly into hive
+
+
+Sqoop import 
+
+	Ø Sqoop import is importing data from RDBMS to HDFS 
+	Ø Each row in a table is treated as a record in HDFS
+	Ø Records can be stored as text File format, sequence File format, Avro and Parquet file format 
+Sqoop Export
+	Ø Sqoop export is exporting data from HDFS to RDBMS 
+	Ø The target table must be already present in the database 
+	Ø Files are read and parsed into a set of records according to the user specified delimiters 
+
+
+
+SQOOP Hands-On
+
+SQOOP Import is more important as these step is frequently 
+
+SQOOP Eval : to run queries on Database 
+----------------------------------------------------------------------------------------------------
+Connect to SQL from terminal : mysql -u root[retail_dba]  -p
+Password :cloudera 
+
+
+List of databases with help of Sqoop 
+
+sqoop-list-databases \
+ --connect "jdbc:mysql://quickstart.cloudera:3306" \
+--username retail_dba \
+--password cloudera
+
+List of tables in Database with help of Sqoop 
+
+sqoop-list-tables \
+ --connect "jdbc:mysql://quickstart.cloudera:3306/retail_dba" \
+--username retail_dba \
+--password cloudera
+
+
+Sqoop Eval 
+
+ sqoop-eval \
+ --connect "jdbc:mysql://quickstart.cloudera:3306" \
+ --username retail_dba \
+ --password cloudera \
+ --query "describe retail_db.orders "
+
+SQOOP IMPORT 
+
+Transfer of RDBMS data Into HDFS 
+Mapreduce Job
+
+Only mappers work and no reducers 
+
+By Default 4 mappers which do work We can change the mappers count .
+
+These mappers divide the work based on the primary key 
+
+If there is no primary key then "
+	Ø Change the number of mappers into 1(this process is not recommended )
+	Ø Mappers don't know how to divide if we don't have primary key 
+	Ø We can use Split by column 
+
+Import with primary Key 
+
+Sqoop import \
+--connect "jdbc:mysql://quickstart.cloudera:3306/retail_db" \
+--username root \
+--password cloudera \
+--table orders \
+--target-dir /queryresult
+
+Hadoop fs -ls /queryresult   : checking for imported data and number of mappers used 
+Hadoop fs -cat /queryresult/*  : content display 
+
+Import without primary key 
+
+sqoop import \
+--connect "jdbc:mysql://quickstart.cloudera:3306/trendy_tech" \
+--username root \
+--password cloudera \
+--table people \
+--target-dir /queryresult
+
+This gives an error for not having a primary key 
+To correct this :
+	Ø We need to change the mappers to 1
+	sqoop import \
+	--connect "jdbc:mysql://quickstart.cloudera:3306/trendy_tech" \
+	--username root \
+	--password cloudera \
+	--table people \
+	-m 1 \
+	--target-dir /peopleresult1
+
+
+
+
+Command to Import all Tables:
+
+sqoop import-all-tables  \
+--connect "jdbc:mysql://quickstart.cloudera:3306/retail_db" \
+--username retail_dba \
+--password cloudera \
+--as-sequencefile \
+-m 4 \
+--warehouse-dir  /user/cloudera/sqoopdir
+
+Target dir vs Warehouse Dir 
+
+Target dir: directly all the data into target dir, target dir the dir path mentioned as the final path 
+
+Warehouse : in this case system will create a sub dir with the table names 
+	Ø Dir is created for the each table 
+	Ø Sub folders created for each table 
+
+
+SQOOP EXERCISE 3
+Sqoop help 
+Sqoop version
+Sqoop help eval 
+
+
+Sqoop password in plan text to -P : it will ask in runtime it can improve some privacy 
+
+--query > -e 
+
+-m > --num-mappers 
+
+Redirecting the logs 
+
+sqoop import \
+--connect jdbc:mysql://quickstart.cloudera:3306/retail_db \
+--username root \
+--password cloudera \
+--table orders \
+--warehouse-dir /queryresult2  1>query.out 2>query.err 
+
+
+Boundary query 
+
+How the mappers split the work 
+
+It depends on the primary key 
+
+Split size = (max of  primary key) - (min of primary key) / num of mappers. 
+
+
+Ex:  10000 records 
+
+Max pk = (10000-0)/4=2500 
+Mapper 1=0-25000
+Mapper2=25001-50000
+Mapper3=50001-75000
+Mapper4=75001-10000
+
+
+Sqoop import execution flow 
+
+
+
+
+
+D
