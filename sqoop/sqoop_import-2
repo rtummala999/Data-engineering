@@ -1,0 +1,141 @@
+Sqoop part 2
+
+Compression technique 
+
+sqoop-import \
+--connect jdbc:mysql://quickstart.cloudera:3306/retail_db \
+--username retial_dba \
+--password cloudera \
+--table orders \
+--compress \
+--warehouse-dir  /user/cloudera/compressresults 
+
+Extension file with ending with "gz" 
+	Ø A lot of improvement with compression 
+	Ø By default hadoop uses gz compression 
+
+BZIP Compression
+
+sqoop-import \
+--connect jdbc:mysql://quickstart.cloudera:3306/retail_db \
+--username retail_db --password cloudera \
+--table orders \
+--compression-codec BZIP2Codec \
+--warehouse-dir /user/cloudera/bzipcompresult
+
+	Ø Extension with bz2 
+	Ø These can some more storage with normal gz compression 
+
+Import the data with selected columns 
+
+sqoop-import \
+--connect jdbc:mysql://quickstart.cloudera:3306/retail_db \
+--username retail_db --password cloudera \
+--table orders \
+--columns customer_id,customer_fname,customer_city \
+--compression-codec BZIP2Codec \
+--warehouse-dir /user/cloudera/bzipcompresult
+
+Hadoop fs -ls [path name] : displaying the imported results 
+
+Hadoop fs -cat [path name]/**** display all the content in the files.
+
+
+Hadoop fs -cat [pathname] | head : display only the first 10 rows 
+
+
+Import with where clause:(with conditions) 
+
+Sqoop-import \
+--connect jdbc:mysql://quickstart.cloudera:3306/retail_db \
+--username retail_dba \
+--password cloudera \
+--table orders \
+--columns order_id,order_customers \
+--where "order_status in ('complete','closed')" \
+--warehouse-dir /user/cloudera/customimportresult 
+
+
+Sqoop import execution plan 
+
+	Ø Get the metadata of the table by running simple query 
+	Select * from customer limit 1;
+	Ø Build the pojo class with appropriate getters and setters 
+	Ø Compile the pojo class into jar file 
+	Ø Run boundary vals query or boundary query to get min and max split column 
+	Ø Compute split size max -min
+	Ø Divide it with number of mappers and computer splits 
+	Ø Submit map reduce job with number of mappers qual to 4 default 
+
+Sqoop boundary query 
+
+
+Whenever we run Sqoop import with number of mappers greater than 1 a bounding vals query will run 
+
+
+	Ø What if the primary key is uneven 
+	Example highest key is 200000 and lowest is 1 but the total records are 75000 only then mappers will split work into 4 mappers 
+	1stmapper : 1-50000(values included)
+	2nd mappers:51000-75000
+	3rd mappers :0
+	4th mappers : some value but less than 1st mapper 
+	
+	Ø Here we got to know that the values are split according to the primary key highest and lowest , these leads to more pressure on single or double mappers where other mappers remain rest .
+	Ø We are not dividing the work equal if we follow above version
+
+
+	We can customized the boundary query 
+	
+	Ø Sqoop-import \
+	--connect jdbc:mysql://quickstart.cloudera:3306/retail_db\
+	--username reatil_dba \
+	--password cloudera \
+	--table orders \
+	--boundary-query "select 1,68883" \
+	--warehouse-dir /user/cloudera/orderboundval
+	
+	Ø Above program they divide the work equal and decrease the pressure on the another mappers 
+	
+	
+	Ø Another boundary query example 
+
+	sqoop-import \
+	--connect jdbc:mysql://quickstart.cloudera:3306/retail_db \
+	--username retail_dba \
+	--password cloudera \
+	--table order_items \
+	--boundary-query   "select min(order_item_order_id),max(order_item_order_id) from order_items where order_items_order_id ge 10000" \ 
+	--warehouse-dir /user/cloudera/bvqresult 
+	Ø Where clause also internally treated as Boundingvalsquery:
+	
+	sqoop_import \
+	--connect jdbc:mysql://qickstart.cloudera:3306/retail_db \
+	--username retail_dba \
+	--password cloudera \
+	--table orders \
+	--columns order_id,order_customer_id,order_status \
+	--where "order_status in ('processing')" \   //where clause becomes the part of boundary query 
+	--warehouse-dir /user/cloudera/whereclauseresult 
+
+	Where clause statement boundaries are calculated  starting boundary are where the condition start and boundary ends at condition ends 
+	 for suppose condition is where "order_status in ('processing')" > this statement start boundary Is :where condition start and end boundary is where processing end in the column 
+	
+	
+	
+	Ø Sqoop-import \
+	--connect jdbc:mysql://quickstart.cloudera:3306/retail_db \
+	--username retail_dba \
+	--password cloudera \
+	--table orders \
+	--where "order_status IN ('COMPLETE','CLOSED') AND order_date LIKE '2013-08%' " \
+	--warehouse-dir /user/cloudera/bvqresult 
+	
+Sqoop import using split by 
+	
+	Ø Why we are making pressure on the boundaries? It's because the clusters or the nodes do-not get heavy work, the work should be equally shared for the mappers . 
+
+	Ø When there is no primary key, we can use the split by to indicate the column based on which mappers should divide the work 
+
+	Ø We can use the split by when primary key is has lot of outliers then we can use any other columns as split by column to get better performance. 
+	
+	
