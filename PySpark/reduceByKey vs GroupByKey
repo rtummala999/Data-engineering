@@ -50,3 +50,19 @@ groupByKey is where we can use but it makes the process slow as the things are n
 
 
 
+Code for the reduceByKey 
+
+rdd=spark.sparkContext.textFile("/public/trendytech/orders/orders.csv")
+map_rdd= rdd.map(lambda x: (x.split(",")[3],1))
+  [('CLOSED', 1),
+ ('PENDING_PAYMENT', 1),
+ ('COMPLETE', 1),
+ ('CLOSED', 1),
+ ('COMPLETE', 1)]
+reduce_rdd= map_rdd.reduceByKey(lambda x,y: x+y)
+  [('PENDING', 9512500),
+ ('PROCESSING', 10343750),
+ ('CANCELED', 1785000),
+ ('COMPLETE', 28623750),
+ ('SUSPECTED_FRAUD', 1947500)]
+
