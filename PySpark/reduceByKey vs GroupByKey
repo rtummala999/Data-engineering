@@ -1,0 +1,52 @@
+
+Reducebykey how this actually works ?
+
+suppose think that we have 4 gb file 
+where it nodes the 950 nodes to execute
+
+m1
+
+collect,654156
+red,35451
+
+
+m2                                          collect(m1+m2+m3......m950)
+
+collect,6545
+red,354
+m3
+
+m4 
+
+m5 
+
+.
+.
+. m950
+
+>> Data will be aggrigated 
+>> after completing all the machines they exchange the information regarding the aggrigations
+>> adventage is here all the nodes are working to make the work done 
+
+
+
+GroupByKey:
+
+what is difference between reduceByKey and groupByKey?
+
+
+> here we are making the same process but the difference in execution where we are trying in different way 
+
+
+groupByKey act as the if there is 1tb  file then 950 nodes
+
+all the nodes will send the data type of data to different nodes, like all the nodes sends data(collect) to one node and all the sets to ideal where this make heavy 
+computation on single machine which will avoid parallisam 
+
+
+
+
+groupByKey is where we can use but it makes the process slow as the things are not smoother than reduceByKey 
+
+
+
