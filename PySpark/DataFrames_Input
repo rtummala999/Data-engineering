@@ -1,0 +1,47 @@
+
+from pyspark.sql import SparkSession
+
+import getpass
+
+username = getpass.getuser()
+
+spark = SparkSession. \
+        builder. \
+        config('spark.ui.port','0'). \
+        config("spark.sql.warehouse.dir", f"/user/itv006702/warehouse"). \
+        enableHiveSupport(). \
+        master('yarn'). \
+        getOrCreate()
+        
+        
+        
+ #For reading csv :
+ 
+ orders=spark.read\
+.format("csv")\
+.option("header","true")\
+.option("inferSchema","true")\
+.load("/public/trendytech/orders_wh/*")
+
+#we can use the short cut also for data reading 
+
+orders= sprak.read\
+.csv("path",header='true',inferschema='true')
+
+#for printing schema 
+orders.printSchema()
+
+# to chaneg the column name 
+orders=orders.withColumnRenamed("order_status","status")
+
+# to change the column data type 
+orders=orders.withColumn("order_date", to_timestamp("order_date"))
+
+
+
+
+
+
+
+
+
