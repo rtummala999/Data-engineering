@@ -1,0 +1,26 @@
+External Table vs Internal Table 
+
+what is external table ?
+> when we are storing data in database then we there are two data created 
+1) Table data 
+2)Meta data 
+  > Meta data is nothing but the schema of the table and information about the table 
+
+> so in the external taboe only the meta data is created, and what about the data in the table ? the data is present some where else so we are just accessing 
+the data by path we're not importing any data 
+can we do any update or delete on this file 
+
+> when we use insert to insert records so new file in the hdfs will be created we can't update or delete 
+
+
+Internal Table is simple 
+>  Here data is imported into the Table and meta data is also created.
+
+External Table :
+
+create table <table name> <constraints> use csv location <path>
+
+Internal Table:
+
+create table <table name> <constraints> using csv
+
