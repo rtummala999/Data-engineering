@@ -1,0 +1,64 @@
+Spark Optimization
+=======================
+
+Performance tunning 
+
+1.application code level optimization
+> for example we can use canche, use reduceByKey insted of groupByKey 
+
+2. cluster level Optimization
+> containers/executors...
+
+out main aim is to reduce the time of computation, we can reduce the cost of the code by optimization
+
+how can we reduce the time with limited resources like making some optimizations
+how can we reduce the time from 10 mins execution to 5 mins some things like this 
+===============================================================================
+
+Resources level
+resources - memory(RAM),CPU cores(Compute)
+
+we have node we call it as working nodes 
+
+so suppose we have 10 working nodes then each node is having like 
+64 RAM 
+16 core cpu 
+
+
+Executors 
+> Executor is like a container which holds the resources 
+> 1 node can hold many executors 
+
+How many exe can be created in one node ?
+
+16Cores, 64 gb RAM 
+
+there are 2 Choice for creating containers 
+
+1. thin executors - Minimal resources possible 
+
+we can get 16 exectors with power of 1 core and 4gb RAM
+
+
+> Drawback  In this option we lose multi treading in this option 
+> A lot of copies of broadcast variable are requried each executor should recive its own way 
+
+2. Fat  executors - 
+---------------------
+To give maximum resources to each executors 
+
+16 cores 64 gb RAM 
+
+we can create the executors with 16 cores and 64 gb RAM
+
+> it is observed if executors hold more than 5 cores then the hdfs throughput suffers (lot of multiple treading)
+>If the executos hold huge amount of memory then garbage collection takes time 
+
+
+---------------------------------------------------------------------------------------
+
+
+
+
+
+
