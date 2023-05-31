@@ -57,6 +57,26 @@ we can create the executors with 16 cores and 64 gb RAM
 
 ---------------------------------------------------------------------------------------
 
+5 core is the right choice for each node 
+
+
+so that we can have 3 machines nodes in the machine they hold 21 gb ram 
+
+and also there is some memory taken by the overhead/heap memory 
+
+SO total memory is 19GB per node 
+
+suppose we have 10 node worker node 
+
+10 *3 = 30 executors 
+
+1 executor is for yarn 
+
+total 29 executors 
+
+
+
+
 
 
 
