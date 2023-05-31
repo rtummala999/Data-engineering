@@ -13,7 +13,7 @@ can we do any update or delete on this file
 > when we use insert to insert records so new file in the hdfs will be created we can't update or delete 
 
 
-Internal Table is simple 
+Managed Table is simple 
 >  Here data is imported into the Table and meta data is also created.
 
 External Table :
