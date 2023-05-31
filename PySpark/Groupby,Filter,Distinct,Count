@@ -1,0 +1,32 @@
+
+Using the group by function in Data frames and with spark sql 
+
+1 Top 15 customers who placed the most number of orders
+
+# using spark Dataframe
+res1=orders_df.groupBy("customer_id").count().sort("count",ascending=False).limit(15)
+
+# using sparksql 
+res1=spark.sql("select customer_id,count(1) from orders group by customer_id order by count(1)  desc")
+=====================================================
+
+2 Find the number of orders under each order status
+
+#using sprak dataframe 
+res2=orders_df.groupBy("order_status").count()
+
+# using spark sql 
+res2=spark.sql("select order_status,count(1) from orders where group by order_status ")
+======================================================
+3 Number of active customers
+# using data frame 
+res3=orders_df.groupBy("customer_id").count().filter("count > 0").count()
+# using spark sql 
+res3=spark.sql("select count(distinct(customer_id)) as active_customers from orders")
+=======================================================
+4 cusomters with more number of closed orders
+# using data frames 
+res4 = orders_df.groupBy("customer_id","order_status").count().filter("order_status='CLOSED'").sort("count",ascending=False)
+# using sql 
+res4 = spark.sql("select customer_id,order_status,count(1) from orders where order_status ='CLOSED' group by customer_id,order_status  order by count(1) desc ")
+
